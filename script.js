@@ -97,9 +97,10 @@ function validateContactInfo() {
     if (!phone) {
         errors.push('Phone number is required');
     } else {
-        const phoneRegex = /^[\d\-\(\)\s]{10,}$/;
-        if (!phoneRegex.test(phone)) {
-            errors.push('Please enter a valid phone number');
+        // Strip non-digits and check if we have exactly 10 digits
+        const digitsOnly = phone.replace(/\D/g, '');
+        if (digitsOnly.length !== 10) {
+            errors.push('Please enter a valid 10-digit phone number');
         }
     }
     

@@ -2,29 +2,61 @@ const express = require('express');
 const nodemailer = require('nodemailer');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Rate limiting configuration
+const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per windowMs
+    message: 'Too many requests from this IP, please try again later.'
+});
+
+const reportLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 10, // Limit each IP to 10 report submissions per windowMs
+    message: 'Too many report submissions, please try again later.'
+});
+
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static('.'));
+
+// Apply rate limiting to all API routes
+app.use('/api/', apiLimiter);
+
+// Serve only specific static files (not entire directory)
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+});
+app.get('/styles.css', (req, res) => {
+    res.sendFile(__dirname + '/styles.css');
+});
+app.get('/script.js', (req, res) => {
+    res.sendFile(__dirname + '/script.js');
+});
 
 // Email configuration
-// Note: You need to set up environment variables for email credentials
+// Note: Environment variables must be set for email functionality
+if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+    console.warn('WARNING: Email credentials not configured. Email functionality will not work.');
+    console.warn('Please set EMAIL_USER and EMAIL_PASSWORD environment variables.');
+}
+
 const transporter = nodemailer.createTransport({
     service: process.env.EMAIL_SERVICE || 'gmail',
     auth: {
-        user: process.env.EMAIL_USER || 'your-email@gmail.com',
-        pass: process.env.EMAIL_PASSWORD || 'your-app-password'
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD
     }
 });
 
 // API endpoint to send budget report
-app.post('/api/send-report', async (req, res) => {
+app.post('/api/send-report', reportLimiter, async (req, res) => {
     try {
         const { name, email, phone, totalIncome, totalExpenses, netIncome, report } = req.body;
         
@@ -37,6 +69,9 @@ app.post('/api/send-report', async (req, res) => {
         }
         
         // Create email HTML content
+        const netIncomeValue = parseFloat(netIncome.replace(/[^0-9.-]+/g, ''));
+        const netIncomeClass = netIncomeValue >= 0 ? 'positive' : 'negative';
+        
         const htmlContent = `
             <!DOCTYPE html>
             <html>
@@ -85,7 +120,7 @@ app.post('/api/send-report', async (req, res) => {
                             </tr>
                             <tr>
                                 <th>Net Income:</th>
-                                <td class="${parseFloat(netIncome.replace(/[^0-9.-]+/g, '')) >= 0 ? 'positive' : 'negative'}">${netIncome}</td>
+                                <td class="${netIncomeClass}">${netIncome}</td>
                             </tr>
                         </table>
                     </div>
@@ -126,8 +161,7 @@ app.post('/api/send-report', async (req, res) => {
         console.error('Error sending email:', error);
         res.status(500).json({ 
             success: false, 
-            message: 'Failed to send report. Please try again later.',
-            error: error.message 
+            message: 'Failed to send report. Please check server configuration.'
         });
     }
 });
