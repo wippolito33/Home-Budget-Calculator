@@ -1,0 +1,363 @@
+// Budget Calculator JavaScript
+
+// List of all income fields
+const incomeFields = [
+    'salary', 'bonuses', 'commissions', 'selfEmployment', 
+    'investmentIncome', 'otherIncome'
+];
+
+// List of all expense fields
+const expenseFields = [
+    'mortgageRent', 'homeInsurance', 'propertyTaxes', 'maintenance',
+    'electricity', 'gas', 'water', 'phoneUtility', 'internet',
+    'carPayment', 'autoInsurance', 'gasoline', 'carMaintenance', 'publicTransit',
+    'groceries', 'diningOut',
+    'healthInsurance', 'medications', 'medicalExpenses',
+    'clothing', 'personalCare', 'entertainment', 'subscriptions',
+    'creditCards', 'studentLoans', 'personalLoans',
+    'retirement', 'emergencyFund', 'investments',
+    'childcare', 'petCare', 'donations', 'otherExpenses'
+];
+
+// Format number as currency
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2
+    }).format(amount);
+}
+
+// Calculate total income
+function calculateTotalIncome() {
+    let total = 0;
+    incomeFields.forEach(field => {
+        const value = parseFloat(document.getElementById(field).value) || 0;
+        total += value;
+    });
+    return total;
+}
+
+// Calculate total expenses
+function calculateTotalExpenses() {
+    let total = 0;
+    expenseFields.forEach(field => {
+        const value = parseFloat(document.getElementById(field).value) || 0;
+        total += value;
+    });
+    return total;
+}
+
+// Update all calculations
+function updateCalculations() {
+    const totalIncome = calculateTotalIncome();
+    const totalExpenses = calculateTotalExpenses();
+    const netIncome = totalIncome - totalExpenses;
+
+    // Update displays
+    document.getElementById('totalIncome').textContent = formatCurrency(totalIncome);
+    document.getElementById('totalExpenses').textContent = formatCurrency(totalExpenses);
+    document.getElementById('summaryIncome').textContent = formatCurrency(totalIncome);
+    document.getElementById('summaryExpenses').textContent = formatCurrency(totalExpenses);
+    
+    const netIncomeElement = document.getElementById('netIncome');
+    netIncomeElement.textContent = formatCurrency(netIncome);
+    
+    // Color code the net income
+    if (netIncome < 0) {
+        netIncomeElement.style.color = '#dc3545';
+    } else if (netIncome === 0) {
+        netIncomeElement.style.color = '#ffc107';
+    } else {
+        netIncomeElement.style.color = '#28a745';
+    }
+}
+
+// Validate contact information
+function validateContactInfo() {
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    
+    const errors = [];
+    
+    if (!name) {
+        errors.push('Name is required');
+    }
+    
+    if (!email) {
+        errors.push('Email address is required');
+    } else {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            errors.push('Please enter a valid email address');
+        }
+    }
+    
+    if (!phone) {
+        errors.push('Phone number is required');
+    } else {
+        // Strip non-digits and check if we have exactly 10 digits
+        const digitsOnly = phone.replace(/\D/g, '');
+        if (digitsOnly.length !== 10) {
+            errors.push('Please enter a valid 10-digit phone number');
+        }
+    }
+    
+    return errors;
+}
+
+// Show error message
+function showError(message) {
+    const errorDiv = document.getElementById('errorMessage');
+    const successDiv = document.getElementById('successMessage');
+    
+    successDiv.style.display = 'none';
+    errorDiv.textContent = message;
+    errorDiv.style.display = 'block';
+    
+    // Scroll to error
+    errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// Show success message
+function showSuccess(message) {
+    const errorDiv = document.getElementById('errorMessage');
+    const successDiv = document.getElementById('successMessage');
+    
+    errorDiv.style.display = 'none';
+    successDiv.textContent = message;
+    successDiv.style.display = 'block';
+    
+    // Scroll to success
+    successDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// Hide messages
+function hideMessages() {
+    document.getElementById('errorMessage').style.display = 'none';
+    document.getElementById('successMessage').style.display = 'none';
+}
+
+// Generate report text
+function generateReport() {
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    
+    const totalIncome = calculateTotalIncome();
+    const totalExpenses = calculateTotalExpenses();
+    const netIncome = totalIncome - totalExpenses;
+    
+    let report = `HOME BUDGET CALCULATOR REPORT\n`;
+    report += `Generated by: William Ippolito, Financial Advisor\n`;
+    report += `Date: ${new Date().toLocaleDateString()}\n`;
+    report += `\n${'='.repeat(60)}\n\n`;
+    
+    report += `CLIENT INFORMATION:\n`;
+    report += `Name: ${name}\n`;
+    report += `Email: ${email}\n`;
+    report += `Phone: ${phone}\n`;
+    report += `\n${'='.repeat(60)}\n\n`;
+    
+    report += `MONTHLY INCOME:\n`;
+    report += `-`.repeat(60) + `\n`;
+    incomeFields.forEach(field => {
+        const value = parseFloat(document.getElementById(field).value) || 0;
+        if (value > 0) {
+            const label = document.querySelector(`label[for="${field}"]`).textContent.replace(':', '');
+            report += `${label.padEnd(40)} ${formatCurrency(value).padStart(15)}\n`;
+        }
+    });
+    report += `-`.repeat(60) + `\n`;
+    report += `${'TOTAL INCOME:'.padEnd(40)} ${formatCurrency(totalIncome).padStart(15)}\n`;
+    report += `\n`;
+    
+    report += `MONTHLY EXPENSES:\n`;
+    report += `-`.repeat(60) + `\n`;
+    
+    // Group expenses by category
+    const categories = {
+        'Housing': ['mortgageRent', 'homeInsurance', 'propertyTaxes', 'maintenance'],
+        'Utilities': ['electricity', 'gas', 'water', 'phoneUtility', 'internet'],
+        'Transportation': ['carPayment', 'autoInsurance', 'gasoline', 'carMaintenance', 'publicTransit'],
+        'Food': ['groceries', 'diningOut'],
+        'Healthcare': ['healthInsurance', 'medications', 'medicalExpenses'],
+        'Personal': ['clothing', 'personalCare', 'entertainment', 'subscriptions'],
+        'Debt Payments': ['creditCards', 'studentLoans', 'personalLoans'],
+        'Savings & Investments': ['retirement', 'emergencyFund', 'investments'],
+        'Other': ['childcare', 'petCare', 'donations', 'otherExpenses']
+    };
+    
+    Object.keys(categories).forEach(category => {
+        let categoryTotal = 0;
+        let hasExpenses = false;
+        
+        categories[category].forEach(field => {
+            const value = parseFloat(document.getElementById(field).value) || 0;
+            if (value > 0) {
+                hasExpenses = true;
+                categoryTotal += value;
+            }
+        });
+        
+        if (hasExpenses) {
+            report += `\n${category}:\n`;
+            categories[category].forEach(field => {
+                const value = parseFloat(document.getElementById(field).value) || 0;
+                if (value > 0) {
+                    const label = document.querySelector(`label[for="${field}"]`).textContent.replace(':', '');
+                    report += `  ${label.padEnd(38)} ${formatCurrency(value).padStart(15)}\n`;
+                }
+            });
+            report += `  ${'Category Total:'.padEnd(38)} ${formatCurrency(categoryTotal).padStart(15)}\n`;
+        }
+    });
+    
+    report += `-`.repeat(60) + `\n`;
+    report += `${'TOTAL EXPENSES:'.padEnd(40)} ${formatCurrency(totalExpenses).padStart(15)}\n`;
+    report += `\n${'='.repeat(60)}\n\n`;
+    
+    report += `BUDGET SUMMARY:\n`;
+    report += `-`.repeat(60) + `\n`;
+    report += `${'Total Monthly Income:'.padEnd(40)} ${formatCurrency(totalIncome).padStart(15)}\n`;
+    report += `${'Total Monthly Expenses:'.padEnd(40)} ${formatCurrency(totalExpenses).padStart(15)}\n`;
+    report += `${'Net Income (Available for Savings):'.padEnd(40)} ${formatCurrency(netIncome).padStart(15)}\n`;
+    report += `-`.repeat(60) + `\n\n`;
+    
+    if (netIncome > 0) {
+        report += `ANALYSIS: You have a positive cash flow of ${formatCurrency(netIncome)} per month.\n`;
+        report += `This is excellent! Consider increasing your savings or investments.\n`;
+    } else if (netIncome === 0) {
+        report += `ANALYSIS: Your income exactly matches your expenses.\n`;
+        report += `Consider reviewing your budget to find areas where you can save.\n`;
+    } else {
+        report += `ANALYSIS: You have a deficit of ${formatCurrency(Math.abs(netIncome))} per month.\n`;
+        report += `WARNING: You are spending more than you earn. This is unsustainable.\n`;
+        report += `Please review your expenses and consider making adjustments.\n`;
+    }
+    
+    report += `\n${'='.repeat(60)}\n`;
+    report += `\nFor personalized financial advice, please contact:\n`;
+    report += `William Ippolito, Financial Advisor\n`;
+    report += `Email: wippolito@gmail.com\n`;
+    
+    return report;
+}
+
+// Send email with report
+async function sendReport() {
+    const report = generateReport();
+    const contactName = document.getElementById('name').value.trim();
+    const contactEmail = document.getElementById('email').value.trim();
+    const contactPhone = document.getElementById('phone').value.trim();
+    
+    const totalIncome = calculateTotalIncome();
+    const totalExpenses = calculateTotalExpenses();
+    const netIncome = totalIncome - totalExpenses;
+    
+    // Create email data
+    const emailData = {
+        name: contactName,
+        email: contactEmail,
+        phone: contactPhone,
+        totalIncome: formatCurrency(totalIncome),
+        totalExpenses: formatCurrency(totalExpenses),
+        netIncome: formatCurrency(netIncome),
+        report: report
+    };
+    
+    try {
+        // Try to send via backend API
+        const response = await fetch('/api/send-report', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(emailData)
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            showSuccess('Report sent successfully to wippolito@gmail.com!');
+            console.log('Budget Report sent:', report);
+            return true;
+        } else {
+            // If backend not available, show report in console and alert
+            throw new Error('Backend API not available');
+        }
+    } catch (error) {
+        console.error('Email sending error:', error);
+        
+        // Fallback: Display report locally
+        console.log('Budget Report:\n', report);
+        
+        // Create a downloadable text file
+        const blob = new Blob([report], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Budget_Report_${contactName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        
+        showSuccess('Report generated and downloaded! To enable email functionality, please configure the server. See README.md for setup instructions.');
+        
+        return true;
+    }
+}
+
+// Reset form
+function resetForm() {
+    if (confirm('Are you sure you want to reset all fields? This will clear all your data.')) {
+        document.getElementById('budgetForm').reset();
+        updateCalculations();
+        hideMessages();
+    }
+}
+
+// Event Listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // Add event listeners to all input fields for real-time calculation
+    const allFields = [...incomeFields, ...expenseFields];
+    allFields.forEach(field => {
+        const input = document.getElementById(field);
+        if (input) {
+            input.addEventListener('input', updateCalculations);
+        }
+    });
+    
+    // Calculate button
+    document.getElementById('calculateBtn').addEventListener('click', function() {
+        hideMessages();
+        updateCalculations();
+        showSuccess('Calculations updated successfully!');
+    });
+    
+    // View Report button (form submit)
+    document.getElementById('budgetForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        hideMessages();
+        
+        // Validate contact information
+        const errors = validateContactInfo();
+        if (errors.length > 0) {
+            showError('Please correct the following errors:\n• ' + errors.join('\n• '));
+            return;
+        }
+        
+        // Update calculations
+        updateCalculations();
+        
+        // Send report
+        await sendReport();
+    });
+    
+    // Reset button
+    document.getElementById('resetBtn').addEventListener('click', resetForm);
+    
+    // Initialize calculations
+    updateCalculations();
+});
