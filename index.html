@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Budget Calculator - William Ippolito, Financial Advisor</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Home Budget Calculator</h1>
+            <h2>William Ippolito, Financial Advisor</h2>
+            <p class="subtitle">Managing your monthly budget can be difficult and frustrating. One of the most important aspects of controlling your budget is to determine where your money is going. This calculator helps you do just that. By entering your income and monthly expenditures, you can see how much you have left to save.</p>
+        </header>
+
+        <div class="calculator-wrapper">
+            <form id="budgetForm">
+                <!-- Contact Information Section -->
+                <div class="section">
+                    <h3>Contact Information</h3>
+                    <div class="form-group">
+                        <label for="name">Name: <span class="required">*</span></label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address: <span class="required">*</span></label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number: <span class="required">*</span></label>
+                        <input type="tel" id="phone" name="phone" required pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}|[0-9]{10}">
+                        <small>Format: 123-456-7890 or 1234567890</small>
+                    </div>
+                </div>
+
+                <!-- Monthly Income Section -->
+                <div class="section">
+                    <h3>Monthly Income</h3>
+                    <div class="form-group">
+                        <label for="salary">Salary/Wages:</label>
+                        <input type="number" id="salary" name="salary" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="bonuses">Bonuses:</label>
+                        <input type="number" id="bonuses" name="bonuses" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="commissions">Commissions:</label>
+                        <input type="number" id="commissions" name="commissions" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="selfEmployment">Self-Employment Income:</label>
+                        <input type="number" id="selfEmployment" name="selfEmployment" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="investmentIncome">Investment Income:</label>
+                        <input type="number" id="investmentIncome" name="investmentIncome" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="otherIncome">Other Income:</label>
+                        <input type="number" id="otherIncome" name="otherIncome" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group total-row">
+                        <label>Total Monthly Income:</label>
+                        <span class="amount" id="totalIncome">$0.00</span>
+                    </div>
+                </div>
+
+                <!-- Monthly Expenses Section -->
+                <div class="section">
+                    <h3>Monthly Expenses</h3>
+                    
+                    <h4>Housing</h4>
+                    <div class="form-group">
+                        <label for="mortgageRent">Mortgage/Rent:</label>
+                        <input type="number" id="mortgageRent" name="mortgageRent" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="homeInsurance">Home/Renter's Insurance:</label>
+                        <input type="number" id="homeInsurance" name="homeInsurance" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="propertyTaxes">Property Taxes:</label>
+                        <input type="number" id="propertyTaxes" name="propertyTaxes" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="maintenance">Maintenance/Repairs:</label>
+                        <input type="number" id="maintenance" name="maintenance" step="0.01" min="0" value="0">
+                    </div>
+
+                    <h4>Utilities</h4>
+                    <div class="form-group">
+                        <label for="electricity">Electricity:</label>
+                        <input type="number" id="electricity" name="electricity" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="gas">Gas:</label>
+                        <input type="number" id="gas" name="gas" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="water">Water/Sewer:</label>
+                        <input type="number" id="water" name="water" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone:</label>
+                        <input type="number" id="phoneUtility" name="phoneUtility" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="internet">Internet/Cable:</label>
+                        <input type="number" id="internet" name="internet" step="0.01" min="0" value="0">
+                    </div>
+
+                    <h4>Transportation</h4>
+                    <div class="form-group">
+                        <label for="carPayment">Car Payment:</label>
+                        <input type="number" id="carPayment" name="carPayment" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="autoInsurance">Auto Insurance:</label>
+                        <input type="number" id="autoInsurance" name="autoInsurance" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="gasoline">Gasoline:</label>
+                        <input type="number" id="gasoline" name="gasoline" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="carMaintenance">Car Maintenance:</label>
+                        <input type="number" id="carMaintenance" name="carMaintenance" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="publicTransit">Public Transportation:</label>
+                        <input type="number" id="publicTransit" name="publicTransit" step="0.01" min="0" value="0">
+                    </div>
+
+                    <h4>Food</h4>
+                    <div class="form-group">
+                        <label for="groceries">Groceries:</label>
+                        <input type="number" id="groceries" name="groceries" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="diningOut">Dining Out:</label>
+                        <input type="number" id="diningOut" name="diningOut" step="0.01" min="0" value="0">
+                    </div>
+
+                    <h4>Healthcare</h4>
+                    <div class="form-group">
+                        <label for="healthInsurance">Health Insurance:</label>
+                        <input type="number" id="healthInsurance" name="healthInsurance" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="medications">Medications:</label>
+                        <input type="number" id="medications" name="medications" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="medicalExpenses">Medical Expenses:</label>
+                        <input type="number" id="medicalExpenses" name="medicalExpenses" step="0.01" min="0" value="0">
+                    </div>
+
+                    <h4>Personal</h4>
+                    <div class="form-group">
+                        <label for="clothing">Clothing:</label>
+                        <input type="number" id="clothing" name="clothing" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="personalCare">Personal Care:</label>
+                        <input type="number" id="personalCare" name="personalCare" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="entertainment">Entertainment:</label>
+                        <input type="number" id="entertainment" name="entertainment" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="subscriptions">Subscriptions/Memberships:</label>
+                        <input type="number" id="subscriptions" name="subscriptions" step="0.01" min="0" value="0">
+                    </div>
+
+                    <h4>Debt Payments</h4>
+                    <div class="form-group">
+                        <label for="creditCards">Credit Card Payments:</label>
+                        <input type="number" id="creditCards" name="creditCards" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="studentLoans">Student Loans:</label>
+                        <input type="number" id="studentLoans" name="studentLoans" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="personalLoans">Personal Loans:</label>
+                        <input type="number" id="personalLoans" name="personalLoans" step="0.01" min="0" value="0">
+                    </div>
+
+                    <h4>Savings & Investments</h4>
+                    <div class="form-group">
+                        <label for="retirement">Retirement Savings:</label>
+                        <input type="number" id="retirement" name="retirement" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="emergencyFund">Emergency Fund:</label>
+                        <input type="number" id="emergencyFund" name="emergencyFund" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="investments">Other Investments:</label>
+                        <input type="number" id="investments" name="investments" step="0.01" min="0" value="0">
+                    </div>
+
+                    <h4>Other Expenses</h4>
+                    <div class="form-group">
+                        <label for="childcare">Childcare:</label>
+                        <input type="number" id="childcare" name="childcare" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="petCare">Pet Care:</label>
+                        <input type="number" id="petCare" name="petCare" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="donations">Charitable Donations:</label>
+                        <input type="number" id="donations" name="donations" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="otherExpenses">Other:</label>
+                        <input type="number" id="otherExpenses" name="otherExpenses" step="0.01" min="0" value="0">
+                    </div>
+
+                    <div class="form-group total-row">
+                        <label>Total Monthly Expenses:</label>
+                        <span class="amount" id="totalExpenses">$0.00</span>
+                    </div>
+                </div>
+
+                <!-- Summary Section -->
+                <div class="section summary-section">
+                    <h3>Budget Summary</h3>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <label>Total Income:</label>
+                            <span class="amount" id="summaryIncome">$0.00</span>
+                        </div>
+                        <div class="summary-item">
+                            <label>Total Expenses:</label>
+                            <span class="amount" id="summaryExpenses">$0.00</span>
+                        </div>
+                        <div class="summary-item highlight">
+                            <label>Net Income (Available for Savings):</label>
+                            <span class="amount" id="netIncome">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" id="calculateBtn" class="btn btn-primary">Calculate</button>
+                    <button type="submit" id="viewReportBtn" class="btn btn-success">View Report</button>
+                    <button type="button" id="resetBtn" class="btn btn-secondary">Reset</button>
+                </div>
+            </form>
+
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+            <div id="successMessage" class="success-message" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
